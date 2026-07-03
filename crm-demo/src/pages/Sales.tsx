@@ -1,22 +1,13 @@
 import { useState } from 'react'
-import { Target, Kanban, Filter as FilterIcon, TrendingDown } from 'lucide-react'
+import { Target, Kanban, TrendingDown, Filter as FilterIcon } from 'lucide-react'
 import { leads, opportunities } from '../mock/sales'
 
 const leadStatusColors: Record<string, string> = {
-  '新建': 'bg-gray-100 text-gray-700',
-  '已联系': 'bg-blue-100 text-blue-700',
-  '已验证': 'bg-purple-100 text-purple-700',
-  '已转化': 'bg-green-100 text-green-700',
-  '已丢失': 'bg-red-100 text-red-700',
-}
-
-const stageColors: Record<string, string> = {
-  '发现': 'border-gray-300 bg-gray-50',
-  '验证': 'border-blue-300 bg-blue-50',
-  '方案': 'border-purple-300 bg-purple-50',
-  '谈判': 'border-yellow-300 bg-yellow-50',
-  '赢单': 'border-green-300 bg-green-50',
-  '丢单': 'border-red-300 bg-red-50',
+  '新建': 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+  '已联系': 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light',
+  '已验证': 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+  '已转化': 'bg-accent/10 text-accent dark:bg-accent/20 dark:text-accent-light',
+  '已丢失': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 }
 
 const stageHeaderColors: Record<string, string> = {
@@ -54,17 +45,14 @@ export default function Sales() {
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">销售管理</h1>
-        <p className="text-sm text-gray-500 mt-1">管理线索、商机和销售管线</p>
-      </div>
+      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">销售管理</h1>
 
       {/* Tabs */}
-      <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 w-fit">
+      <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-button p-1 w-fit">
         <button
           onClick={() => setActiveTab('leads')}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'leads' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+          className={`flex items-center space-x-2 px-4 py-2 rounded-button text-sm font-medium transition-colors ${
+            activeTab === 'leads' ? 'bg-surface dark:bg-surface-dark text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
           }`}
         >
           <Target size={16} />
@@ -72,8 +60,8 @@ export default function Sales() {
         </button>
         <button
           onClick={() => setActiveTab('pipeline')}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'pipeline' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+          className={`flex items-center space-x-2 px-4 py-2 rounded-button text-sm font-medium transition-colors ${
+            activeTab === 'pipeline' ? 'bg-surface dark:bg-surface-dark text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
           }`}
         >
           <Kanban size={16} />
@@ -81,8 +69,8 @@ export default function Sales() {
         </button>
         <button
           onClick={() => setActiveTab('funnel')}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'funnel' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+          className={`flex items-center space-x-2 px-4 py-2 rounded-button text-sm font-medium transition-colors ${
+            activeTab === 'funnel' ? 'bg-surface dark:bg-surface-dark text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
           }`}
         >
           <TrendingDown size={16} />
@@ -92,34 +80,34 @@ export default function Sales() {
 
       {/* Leads Tab */}
       {activeTab === 'leads' && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">线索列表</h2>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <FilterIcon size={16} />
+        <div className="bg-surface dark:bg-surface-dark rounded-card border border-border-light dark:border-border-dark overflow-hidden">
+          <div className="p-4 border-b border-border-light dark:border-border-dark flex items-center justify-between">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">线索列表</h2>
+            <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+              <FilterIcon size={14} />
               <span>共 {leads.length} 条线索</span>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">线索信息</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">来源</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">状态</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">评分</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">负责人</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">创建时间</th>
+              <thead>
+                <tr className="border-b border-border-light dark:border-border-dark">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">线索信息</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">来源</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">状态</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">评分</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">负责人</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">创建时间</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {leads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-gray-50">
+                  <tr key={lead.id} className="border-b border-border-light/50 dark:border-border-dark/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-gray-900">{lead.name}</p>
-                      <p className="text-xs text-gray-500">{lead.company}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{lead.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{lead.company}</p>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{lead.source}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{lead.source}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${leadStatusColors[lead.status]}`}>
                         {lead.status}
@@ -127,20 +115,20 @@ export default function Sales() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
-                        <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
-                              lead.score >= 80 ? 'bg-green-500' :
+                              lead.score >= 80 ? 'bg-accent' :
                               lead.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                             }`}
                             style={{ width: `${lead.score}%` }}
                           ></div>
                         </div>
-                        <span className="text-xs text-gray-600">{lead.score}</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{lead.score}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{lead.assignee}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{lead.createdAt}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{lead.assignee}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{lead.createdAt}</td>
                   </tr>
                 ))}
               </tbody>
@@ -154,31 +142,31 @@ export default function Sales() {
         <div className="flex space-x-4 overflow-x-auto pb-4">
           {opportunitiesByStage.map(({ stage, items }) => (
             <div key={stage} className="flex-shrink-0 w-72">
-              <div className={`rounded-xl border-2 ${stageColors[stage]} overflow-hidden`}>
-                <div className={`${stageHeaderColors[stage]} px-4 py-2 flex items-center justify-between`}>
+              <div className="rounded-card border border-border-light dark:border-border-dark bg-background dark:bg-background-dark overflow-hidden">
+                <div className={`${stageHeaderColors[stage]} px-4 py-2.5 flex items-center justify-between`}>
                   <span className="text-sm font-semibold text-white">{stage}</span>
-                  <span className="text-xs text-white bg-white bg-opacity-30 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-white/80 bg-white/20 px-2 py-0.5 rounded-full">
                     {items.length}
                   </span>
                 </div>
                 <div className="p-3 space-y-3 min-h-[200px]">
                   {items.map((opp) => (
-                    <div key={opp.id} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
-                      <p className="text-sm font-medium text-gray-900 mb-1">{opp.name}</p>
-                      <p className="text-xs text-gray-500 mb-2">{opp.customer}</p>
+                    <div key={opp.id} className="bg-surface dark:bg-surface-dark rounded-card p-3 border border-border-light dark:border-border-dark hover:shadow-md dark:hover:border-gray-600 transition-all cursor-pointer">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{opp.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{opp.customer}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-primary-600">¥{(opp.value / 10000).toFixed(0)}万</span>
-                        <span className="text-xs text-gray-400">{opp.probability}%</span>
+                        <span className="text-sm font-bold text-primary dark:text-primary-light">¥{(opp.value / 10000).toFixed(0)}万</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{opp.probability}%</span>
                       </div>
                       <div className="mt-2 flex items-center justify-between">
-                        <span className="text-xs text-gray-400">{opp.assignee}</span>
-                        <span className="text-xs text-gray-400">{opp.expectedClose}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{opp.assignee}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{opp.expectedClose}</span>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="px-4 py-2 bg-white border-t border-gray-100">
-                  <p className="text-xs text-gray-500">
+                <div className="px-4 py-2 border-t border-border-light dark:border-border-dark">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     总值: ¥{(items.reduce((s, o) => s + o.value, 0) / 10000).toFixed(0)}万
                   </p>
                 </div>
@@ -190,8 +178,8 @@ export default function Sales() {
 
       {/* Funnel Tab */}
       {activeTab === 'funnel' && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6 text-center">销售漏斗</h2>
+        <div className="bg-surface dark:bg-surface-dark rounded-card border border-border-light dark:border-border-dark p-8">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-6 text-center">销售漏斗</h2>
           <div className="max-w-2xl mx-auto space-y-2">
             {funnelData.map((item, index) => {
               const widthPercent = 40 + (60 * (maxCount - index) / maxCount)
@@ -201,7 +189,7 @@ export default function Sales() {
                     className="relative group cursor-pointer transition-all hover:opacity-90"
                     style={{ width: `${widthPercent}%` }}
                   >
-                    <div className={`py-4 rounded-lg text-center text-white font-medium ${
+                    <div className={`py-4 rounded-card text-center text-white font-medium ${
                       index === 0 ? 'bg-gray-500' :
                       index === 1 ? 'bg-blue-500' :
                       index === 2 ? 'bg-purple-500' :
@@ -218,10 +206,10 @@ export default function Sales() {
           <div className="mt-8 grid grid-cols-5 gap-4 text-center">
             {funnelData.map((item, index) => (
               <div key={item.stage}>
-                <p className="text-xs text-gray-500">{item.stage}</p>
-                <p className="text-lg font-bold text-gray-900">{item.count}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{item.stage}</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{item.count}</p>
                 {index < funnelData.length - 1 && (
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                     转化率: {funnelData[index + 1].count > 0 ? Math.round((funnelData[index + 1].count / Math.max(item.count, 1)) * 100) : 0}%
                   </p>
                 )}

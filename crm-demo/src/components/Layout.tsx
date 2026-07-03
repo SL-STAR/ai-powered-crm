@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   Users,
@@ -10,9 +10,11 @@ import {
   Bell,
   Search,
   Menu,
-  X,
   User,
-  ChevronDown
+  Sun,
+  Moon,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react'
 
 interface LayoutProps {
@@ -28,109 +30,128 @@ const navItems = [
   { path: '/ai-assistant', label: 'AI助手', icon: Bot },
 ]
 
+const pageTitles: Record<string, string> = {
+  '/customers': '客户管理',
+  '/sales': '销售管理',
+  '/marketing': '营销中心',
+  '/service': '服务中心',
+  '/analytics': '数据分析',
+  '/ai-assistant': 'AI 智能助手',
+}
+
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem('crm-dark-mode')
+    return stored === 'true'
+  })
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    localStorage.setItem('crm-dark-mode', String(darkMode))
+  }, [darkMode])
+
+  const currentTitle = Object.entries(pageTitles).find(([path]) =>
+    location.pathname.startsWith(path)
+  )?.[1] || '智能CRM'
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
+    <div className="flex h-screen bg-background dark:bg-background-dark">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-surface dark:bg-surface-dark border-r border-border-light dark:border-border-dark transition-all duration-200 ${
+          collapsed ? 'w-16' : 'w-60'
         }`}
       >
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CRM</span>
-            </div>
-            <span className="text-lg font-semibold text-gray-800">智能CRM</span>
+        {/* Logo */}
+        <div className="flex items-center h-12 px-4 border-b border-border-light dark:border-border-dark">
+          <div className="w-8 h-8 bg-primary rounded-card flex items-center justify-center flex-shrink-0">
+            <span className="text-white font-bold text-xs">CRM</span>
           </div>
-          <button
-            className="lg:hidden text-gray-500 hover:text-gray-700"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X size={20} />
-          </button>
+          {!collapsed && (
+            <span className="ml-3 text-base font-semibold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+              智能CRM
+            </span>
+          )}
         </div>
 
-        <nav className="mt-6 px-3">
+        {/* Navigation */}
+        <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path || 
+            const isActive = location.pathname === item.path ||
               (item.path === '/customers' && location.pathname.startsWith('/customers'))
             const Icon = item.icon
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center px-4 py-3 mb-1 rounded-lg text-sm font-medium transition-colors ${
+                title={collapsed ? item.label : undefined}
+                className={`flex items-center px-3 py-2.5 rounded-button text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-primary-50 text-primary-700 border-l-3'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
-                <Icon size={20} className={`mr-3 ${isActive ? 'text-primary-500' : 'text-gray-400'}`} />
-                {item.label}
+                <Icon size={20} className={`flex-shrink-0 ${isActive ? 'text-primary dark:text-primary-light' : ''}`} />
+                {!collapsed && <span className="ml-3 whitespace-nowrap">{item.label}</span>}
               </Link>
             )
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center">
-              <User size={18} className="text-primary-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-800 truncate">管理员</p>
-              <p className="text-xs text-gray-500 truncate">admin@crm.com</p>
-            </div>
-          </div>
+        {/* Bottom actions */}
+        <div className="px-2 py-3 border-t border-border-light dark:border-border-dark space-y-1">
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            title={darkMode ? '切换浅色模式' : '切换深色模式'}
+            className="flex items-center w-full px-3 py-2.5 rounded-button text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          >
+            {darkMode ? <Sun size={20} className="flex-shrink-0" /> : <Moon size={20} className="flex-shrink-0" />}
+            {!collapsed && <span className="ml-3 whitespace-nowrap">{darkMode ? '浅色模式' : '深色模式'}</span>}
+          </button>
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            title={collapsed ? '展开侧栏' : '收起侧栏'}
+            className="flex items-center w-full px-3 py-2.5 rounded-button text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          >
+            {collapsed ? <PanelLeftOpen size={20} className="flex-shrink-0" /> : <PanelLeftClose size={20} className="flex-shrink-0" />}
+            {!collapsed && <span className="ml-3 whitespace-nowrap">收起侧栏</span>}
+          </button>
         </div>
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top header */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${collapsed ? 'ml-16' : 'ml-60'}`}>
+        {/* Top header - 48px */}
+        <header className="h-12 bg-surface dark:bg-surface-dark border-b border-border-light dark:border-border-dark flex items-center justify-between px-6 flex-shrink-0">
           <div className="flex items-center space-x-4">
             <button
-              className="lg:hidden text-gray-500 hover:text-gray-700"
-              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              onClick={() => setCollapsed(!collapsed)}
             >
-              <Menu size={24} />
+              <Menu size={20} />
             </button>
-            <div className="relative hidden sm:block">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="搜索客户、商机、工单..."
-                className="pl-10 pr-4 py-2 w-80 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
+            <h1 className="text-base font-semibold text-gray-800 dark:text-gray-100">{currentTitle}</h1>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <button className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          <div className="flex items-center space-x-3">
+            <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-button transition-colors">
+              <Search size={18} />
             </button>
-            <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2 py-1">
-              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                <User size={16} className="text-primary-600" />
+            <button className="relative p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-button transition-colors">
+              <Bell size={18} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-button px-2 py-1 transition-colors">
+              <div className="w-7 h-7 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+                <User size={14} className="text-primary dark:text-primary-light" />
               </div>
-              <span className="text-sm font-medium text-gray-700 hidden sm:inline">张管理</span>
-              <ChevronDown size={16} className="text-gray-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:inline">张管理</span>
             </div>
           </div>
         </header>
