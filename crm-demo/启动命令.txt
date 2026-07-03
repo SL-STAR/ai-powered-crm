@@ -1,0 +1,6 @@
+启动方式：
+
+cd crm-demo
+npm install
+npm run dev
+浏览器访问 http://localhost:5173 即可查看Demo。所有数据为中文mock数据，无需后端服务。
